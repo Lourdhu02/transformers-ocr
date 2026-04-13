@@ -1,0 +1,10 @@
+torch>=2.2.0
+torchvision>=0.17.0
+albumentations>=1.4.0
+opencv-python>=4.9.0
+numpy>=1.26.0
+editdistance>=0.8.1
+timm>=0.9.16
+onnx>=1.16.0
+onnxruntime>=1.18.0
+tqdm>=4.66.0
