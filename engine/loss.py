@@ -22,3 +22,4 @@ class FocalCTCLoss(nn.Module):
         pt      = torch.exp(-loss.detach())
         focal_w = (1 - pt) ** self.gamma
         return (focal_w * loss).mean()
+

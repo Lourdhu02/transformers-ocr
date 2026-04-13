@@ -55,3 +55,4 @@ def cutmix_batch(imgs, targets, lengths, alpha: float = 0.5):
     imgs_mix = imgs.clone()
     imgs_mix[:, :, :, cx:cx + cut_w] = imgs[rand_idx, :, :, cx:cx + cut_w]
     return imgs_mix, targets, lengths
+

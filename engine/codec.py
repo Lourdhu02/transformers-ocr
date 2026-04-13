@@ -70,3 +70,4 @@ class Encoder:
 
     def confidence(self, log_probs: torch.Tensor) -> float:
         return log_probs.max(dim=-1).values.mean().exp().item()
+

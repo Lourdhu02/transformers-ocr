@@ -161,3 +161,4 @@ def build_model(variant: str, img_h: int, img_w: int, num_classes: int,
                    dims=cfg["dims"], depths=cfg["depths"],
                    num_heads=cfg["num_heads"], drop=cfg["drop"],
                    use_frm=use_frm, use_sgm=use_sgm)
+

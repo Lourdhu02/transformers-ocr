@@ -1,0 +1,9 @@
+data/
+weights/
+exports/
+logs/
+__pycache__/
+*.pyc
+*.pth
+*.onnx
+.ipynb_checkpoints/

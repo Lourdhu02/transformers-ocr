@@ -70,3 +70,4 @@ def build_loaders(cfg: dict, encoder: Encoder,
                                num_workers=cfg["workers"], collate_fn=fn,
                                pin_memory=True, persistent_workers=cfg["workers"] > 0)
     return train_loader, val_loader, test_loader
+
