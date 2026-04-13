@@ -64,11 +64,12 @@ def main():
             print(f"size  FP32={fp32_mb:.1f}MB  INT8={int8_mb:.1f}MB  "
                   f"ratio={fp32_mb/int8_mb:.1f}x")
     except ImportError:
-        print("onnx / onnxruntime not installed — skipping check + quantize")
+        print("onnx / onnxruntime not installed  skipping check + quantize")
 
     print("\ndone.")
 
 
 if __name__ == "__main__":
     main()
+
 

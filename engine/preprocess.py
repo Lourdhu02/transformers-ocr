@@ -55,3 +55,4 @@ def preprocess(img_bgr: np.ndarray,
         img_gray = _unsharp(img_gray)
     return cv2.cvtColor(img_gray, cv2.COLOR_GRAY2BGR)
 
+

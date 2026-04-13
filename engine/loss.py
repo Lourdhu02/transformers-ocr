@@ -23,3 +23,4 @@ class FocalCTCLoss(nn.Module):
         focal_w = (1 - pt) ** self.gamma
         return (focal_w * loss).mean()
 
+
