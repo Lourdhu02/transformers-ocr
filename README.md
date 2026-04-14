@@ -2,9 +2,9 @@
 
 <img src="https://img.shields.io/badge/transformers--ocr-v1.0.0-0d1117?style=for-the-badge&logo=pytorch&logoColor=EE4C2C" alt="version"/>
 
-# transformers-ocr
+# Transformer OCR for Digit Recognition using SVTR
 
-**Production-grade SVTR-based OCR for numbers & industrial digit reading.**
+**A high-accuracy Transformer-based OCR framework for digit recognition using SVTR, PyTorch, CTC loss, beam search decoding, and advanced augmentation techniques.**
 
 Scene Text Vision Transformer · CTC · Beam Search · ONNX · AMP · TTA
 
