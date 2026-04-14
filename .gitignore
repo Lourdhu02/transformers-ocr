@@ -1,9 +1,60 @@
-data/
-weights/
-exports/
-logs/
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+.env
+
+# PyTorch checkpoints & weights
+weights/
 *.pth
+*.pt
+*.ckpt
+
+# ONNX exports
+exports/
 *.onnx
+
+# Dataset
+data/
+
+# Training logs & hard negatives
+logs/
+
+# Jupyter / IPython
 .ipynb_checkpoints/
+*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage & test artifacts
+.coverage
+htmlcov/
+.pytest_cache/
+.ruff_cache/
+
+# Misc
+*.log
+*.tmp
