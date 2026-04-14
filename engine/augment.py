@@ -45,15 +45,14 @@ def get_val_transforms(h: int, w: int) -> A.Compose:
 
 
 def cutmix_batch(imgs, targets, lengths, alpha: float = 0.5):
-    if random.random() > 0.5:
+    """CutMix augmentation. alpha is correctly used from caller (was hardcoded before)."""
+    if random.random() > 0.5 or alpha <= 0:
         return imgs, targets, lengths
     B, C, H, W = imgs.shape
-    lam   = np.random.beta(alpha, alpha)
+    lam      = np.random.beta(alpha, alpha)
     rand_idx = np.random.permutation(B)
-    cut_w = int(W * (1 - lam))
-    cx    = random.randint(0, W - cut_w)
+    cut_w    = int(W * (1.0 - lam))
+    cx       = random.randint(0, max(W - cut_w, 0))
     imgs_mix = imgs.clone()
     imgs_mix[:, :, :, cx:cx + cut_w] = imgs[rand_idx, :, :, cx:cx + cut_w]
     return imgs_mix, targets, lengths
-
-

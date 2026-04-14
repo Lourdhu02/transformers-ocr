@@ -9,11 +9,11 @@ from engine.codec import Encoder
 class MeterDataset(Dataset):
     def __init__(self, img_dir: str, label_file: str, transform,
                  encoder: Encoder, apply_preprocess: bool = True):
-        self.img_dir           = img_dir
-        self.transform         = transform
-        self.encoder           = encoder
-        self.apply_preprocess  = apply_preprocess
-        self.samples           = []
+        self.img_dir          = img_dir
+        self.transform        = transform
+        self.encoder          = encoder
+        self.apply_preprocess = apply_preprocess
+        self.samples          = []
         with open(label_file) as f:
             for line in f:
                 parts = line.strip().split()
@@ -48,9 +48,10 @@ def collate_fn(batch, encoder: Encoder):
             labels)
 
 
-def build_loaders(cfg: dict, encoder: Encoder,
-                  train_tf, val_tf) -> tuple:
+def build_loaders(cfg: dict, encoder: Encoder, train_tf, val_tf) -> tuple:
     from functools import partial
+
+    pf = cfg.get("prefetch_factor", 2) if cfg["workers"] > 0 else None
 
     train_ds = MeterDataset(cfg["train_dir"], cfg["train_labels"],
                              train_tf, encoder, apply_preprocess=True)
@@ -60,15 +61,25 @@ def build_loaders(cfg: dict, encoder: Encoder,
                              val_tf,   encoder, apply_preprocess=True)
 
     fn = partial(collate_fn, encoder=encoder)
-    train_loader = DataLoader(train_ds, cfg["batch_train"], shuffle=True,
-                               num_workers=cfg["workers"], collate_fn=fn,
-                               pin_memory=True, persistent_workers=cfg["workers"] > 0)
-    val_loader   = DataLoader(val_ds,   cfg["batch_val"],   shuffle=False,
-                               num_workers=cfg["workers"], collate_fn=fn,
-                               pin_memory=True, persistent_workers=cfg["workers"] > 0)
-    test_loader  = DataLoader(test_ds,  cfg["batch_val"],   shuffle=False,
-                               num_workers=cfg["workers"], collate_fn=fn,
-                               pin_memory=True, persistent_workers=cfg["workers"] > 0)
+    train_loader = DataLoader(
+        train_ds, cfg["batch_train"], shuffle=True,
+        num_workers=cfg["workers"], collate_fn=fn,
+        pin_memory=True,
+        persistent_workers=cfg["workers"] > 0,
+        prefetch_factor=pf,
+    )
+    val_loader = DataLoader(
+        val_ds, cfg["batch_val"], shuffle=False,
+        num_workers=cfg["workers"], collate_fn=fn,
+        pin_memory=True,
+        persistent_workers=cfg["workers"] > 0,
+        prefetch_factor=pf,
+    )
+    test_loader = DataLoader(
+        test_ds, cfg["batch_val"], shuffle=False,
+        num_workers=cfg["workers"], collate_fn=fn,
+        pin_memory=True,
+        persistent_workers=cfg["workers"] > 0,
+        prefetch_factor=pf,
+    )
     return train_loader, val_loader, test_loader
-
-
