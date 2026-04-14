@@ -4,7 +4,7 @@
 
 # transformers-ocr
 
-**Production-grade SVTR-based OCR for meter & industrial digit reading.**
+**Production-grade SVTR-based OCR for numbers & industrial digit reading.**
 
 Scene Text Vision Transformer · CTC · Beam Search · ONNX · AMP · TTA
 
@@ -23,7 +23,7 @@ Scene Text Vision Transformer · CTC · Beam Search · ONNX · AMP · TTA
 
 ## Overview
 
-**transformers-ocr** is a clean, fully-featured OCR pipeline specialised for reading numeric values (e.g. `12345.67`) from meter images in challenging real-world conditions — motion blur, overexposure, grime, and low contrast.
+**transformers-ocr** is a clean, fully-featured OCR pipeline specialised for reading numeric values (e.g. `12345.67`) from numbers images in challenging real-world conditions — motion blur, overexposure, grime, and low contrast.
 
 The backbone is [SVTR (Scene Text Vision Transformer)](https://arxiv.org/abs/2205.00159), extended with:
 
@@ -35,7 +35,7 @@ The backbone is [SVTR (Scene Text Vision Transformer)](https://arxiv.org/abs/220
 - **5× TTA** — brightness/contrast sweep with majority vote at inference
 - **ONNX export** + optional INT8 dynamic quantization
 
-Supports `tiny / small / base` variants (~5M / ~12M / ~25M parameters).
+Supports `tiny / small / base` variants (~5M / ~12M / ~25M paranumberss).
 
 ---
 
@@ -121,7 +121,7 @@ transformers-ocr/
 ├── engine/
 │   ├── augment.py              # Albumentations pipelines + CutMix
 │   ├── codec.py                # CTC encoder / greedy & beam decoder
-│   ├── dataset.py              # MeterDataset + DataLoader factory
+│   ├── dataset.py              # numbersDataset + DataLoader factory
 │   ├── loss.py                 # FocalCTCLoss
 │   └── preprocess.py           # CLAHE → bilateral → deskew → unsharp
 ├── models/
@@ -161,8 +161,8 @@ data/
 Each label file uses whitespace-separated `filename value` pairs, one per line:
 
 ```
-meter_00001.jpg 12345.6
-meter_00002.jpg 00987.3
+numbers_00001.jpg 12345.6
+numbers_00002.jpg 00987.3
 ```
 
 The default character set is `0123456789.`. Change `CHARS` in `configs/config.py` to adapt to your use case.
@@ -211,7 +211,7 @@ The progress bar reports batch loss, running average, current exact-match accura
 Single image:
 
 ```bash
-python predict.py --weights weights/tiny_best.pth --img path/to/meter.jpg
+python predict.py --weights weights/tiny_best.pth --img path/to/numbers.jpg
 ```
 
 Folder of images:
@@ -231,9 +231,9 @@ Example output:
 ```
 Image                                    Pred           Conf    Flag
 --------------------------------------------------------------------
-meter_0001.jpg                           12345.6        0.9872
-meter_0002.jpg                           00987.3        0.9541
-meter_0003.jpg                           84201.0        0.7612  LOW_CONF
+numbers_0001.jpg                           12345.6        0.9872
+numbers_0002.jpg                           00987.3        0.9541
+numbers_0003.jpg                           84201.0        0.7612  LOW_CONF
 ```
 
 `LOW_CONF` is printed when confidence is below `conf_threshold` (default `0.85`).
@@ -360,7 +360,7 @@ If you use this project in your research, please cite:
 ```bibtex
 @software{lourdhu02_transformers_ocr_2026,
   author    = {Lourdhu02},
-  title     = {transformers-ocr: SVTR-based OCR for Meter Reading},
+  title     = {transformers-ocr: SVTR-based OCR for numbers Reading},
   year      = {2026},
   url       = {https://github.com/Lourdhu02/transformers-ocr},
   license   = {MIT}
@@ -388,7 +388,7 @@ This project is licensed under the [MIT License](LICENSE).
 
 <div align="center">
 
-Made with precision for real-world meter OCR.
+Made with precision for real-world numbers OCR.
 
 [![Stars](https://img.shields.io/github/stars/Lourdhu02/transformers-ocr?style=social)](https://github.com/Lourdhu02/transformers-ocr/stargazers)
 [![Forks](https://img.shields.io/github/forks/Lourdhu02/transformers-ocr?style=social)](https://github.com/Lourdhu02/transformers-ocr/network/members)
