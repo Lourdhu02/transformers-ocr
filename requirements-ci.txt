@@ -1,0 +1,8 @@
+torch>=2.2.0
+torchvision>=0.17.0
+numpy>=1.26.0
+tqdm>=4.66.0
+
+pytest>=8.0.0
+pytest-cov>=5.0.0
+ruff>=0.4.4
