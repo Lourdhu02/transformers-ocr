@@ -1,4 +1,4 @@
-import re as _re
+import re
 
 CHARS = "0123456789."
 
@@ -60,6 +60,6 @@ CONFIGS = {
 # Validate regexes at import time — crash loudly rather than silently at eval
 for _k, _v in CONFIGS.items():
     try:
-        _re.compile(_v["lexicon_re"])
-    except _re.error as e:
+        re.compile(_v["lexicon_re"])
+    except re.error as e:
         raise ValueError(f"CONFIGS[{_k}]['lexicon_re'] is invalid regex: {e}")

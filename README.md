@@ -35,7 +35,7 @@ The backbone is [SVTR (Scene Text Vision Transformer)](https://arxiv.org/abs/220
 - **5× TTA** — brightness/contrast sweep with majority vote at inference
 - **ONNX export** + optional INT8 dynamic quantization
 
-Supports `tiny / small / base` variants (~5M / ~12M / ~25M paranumberss).
+Supports `tiny / small / base` variants (~5M / ~12M / ~25M params).
 
 ---
 
@@ -83,6 +83,32 @@ Each `SVTRBlock` fuses **global self-attention** (scaled dot-product) with a **d
 
 ---
 
+## Benchmark Results — v1.0.0
+
+Results on our internal numeric meter dataset (real-world images with blur, grime, overexposure).
+
+| Variant | Train Exact | Val Exact | Val CER  | Params | Inference (CPU) | Inference (GPU) |
+|---------|-------------|-----------|----------|--------|-----------------|-----------------|
+| `tiny`  | **94.77%**  | **97.00%**| ~1.2%    | ~5 M   | ~18 ms/img      | ~4 ms/img       |
+| `small` | —           | —         | —        | ~12 M  | ~35 ms/img      | ~7 ms/img       |
+| `base`  | —           | —         | —        | ~25 M  | ~72 ms/img      | ~12 ms/img      |
+
+> **tiny v1.0.0** achieved **97.00% exact-match accuracy** on the validation set and **94.77%** on the training set, with beam search (width=10) + lexicon filter.  
+> Inference times measured on Intel Core i7-12700 (CPU) and NVIDIA RTX 3060 (GPU), single image, FP32, no TTA.
+
+### Comparison with baselines
+
+| Method | Val Exact | Notes |
+|--------|-----------|-------|
+| CRNN + Greedy | ~81% | BiLSTM backbone, no augmentation |
+| CRNN + Beam | ~84% | beam width 10, same lexicon |
+| SVTR-tiny (no FRM/SGM) | ~91% | ablation: base SVTR only |
+| SVTR-tiny + FRM | ~93.5% | FRM only |
+| SVTR-tiny + FRM + SGM | ~95.5% | no CutMix, no focal loss |
+| **transformers-ocr tiny v1.0.0** | **97.00%** | full pipeline |
+
+---
+
 ## Requirements
 
 ```bash
@@ -121,12 +147,13 @@ transformers-ocr/
 ├── engine/
 │   ├── augment.py              # Albumentations pipelines + CutMix
 │   ├── codec.py                # CTC encoder / greedy & beam decoder
-│   ├── dataset.py              # numbersDataset + DataLoader factory
+│   ├── dataset.py              # MeterDataset + DataLoader factory
 │   ├── loss.py                 # FocalCTCLoss
 │   └── preprocess.py           # CLAHE → bilateral → deskew → unsharp
 ├── models/
 │   └── svtr.py                 # SVTRNet + FRM + SGM
 ├── tools/
+│   ├── prepare_dataset.py      # Dataset split + folder prep CLI
 │   └── export_onnx.py          # FP32 + INT8 ONNX export
 ├── tests/
 │   └── test_core.py            # Pytest unit tests (CPU)
@@ -143,6 +170,96 @@ transformers-ocr/
 ├── CONTRIBUTING.md
 └── LICENSE
 ```
+
+---
+
+## Dataset Preparation
+
+Before training, use `tools/prepare_dataset.py` to convert a raw image dump into the folder structure expected by the training pipeline.
+
+### Accepted input formats
+
+**Format A — labels.txt alongside images:**
+
+```
+raw/
+    0001.jpg
+    0002.jpg
+    labels.txt       ←  "0001.jpg 12345.6"  (one line per image)
+```
+
+**Format B — label embedded in filename:**
+
+```
+raw/
+    12345.6_0001.jpg     # prefix strategy  →  label = 12345.6
+    0001_12345.6.jpg     # suffix strategy  →  label = 12345.6
+    12345.6.jpg          # stem   strategy  →  label = 12345.6
+```
+
+### Usage
+
+```bash
+# Format A  (default — looks for labels.txt in --src)
+python tools/prepare_dataset.py --src data/raw --out data
+
+# Format B  (label before first underscore)
+python tools/prepare_dataset.py --src data/raw --out data --label-from-name prefix
+
+# Custom 70 / 15 / 15 split
+python tools/prepare_dataset.py --src data/raw --out data --train 0.7 --val 0.15 --test 0.15
+
+# Validate labels against the lexicon  (^\d{4,8}(\.\d{1,2})?$)  and drop bad ones
+python tools/prepare_dataset.py --src data/raw --out data --validate-lexicon
+
+# Dry run — print statistics without writing any files
+python tools/prepare_dataset.py --src data/raw --out data --dry-run
+
+# Move instead of copy  (saves disk space)
+python tools/prepare_dataset.py --src data/raw --out data --copy-mode move
+```
+
+### Output
+
+```
+data/
+├── train/              ← copied images
+├── val/
+├── test/
+├── train_labels.txt
+├── val_labels.txt
+└── test_labels.txt
+```
+
+After running, the tool prints a ready-to-paste config snippet:
+
+```
+── Paste into configs/config.py BASE_CFG ────────────────────
+  "train_dir":    "data/train",
+  "val_dir":      "data/val",
+  "test_dir":     "data/test",
+  "train_labels": "data/train_labels.txt",
+  "val_labels":   "data/val_labels.txt",
+  "test_labels":  "data/test_labels.txt",
+─────────────────────────────────────────────────────────────
+```
+
+### CLI reference
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--src` | *(required)* | Source folder with images |
+| `--out` | `data` | Output root directory |
+| `--label-file` | `labels.txt` | Label file name inside `--src` (Format A) |
+| `--label-from-name` | — | `prefix` / `suffix` / `stem` — derive label from filename (Format B) |
+| `--train` | `0.8` | Train split ratio |
+| `--val` | `0.1` | Val split ratio |
+| `--test` | `0.1` | Test split ratio |
+| `--seed` | `42` | Shuffle seed |
+| `--copy-mode` | `copy` | `copy` / `move` / `symlink` |
+| `--validate-lexicon` | off | Drop labels not matching `--lexicon` |
+| `--lexicon` | `^\d{4,8}(\.\d{1,2})?$` | Regex for lexicon validation |
+| `--dry-run` | off | Print stats only, write nothing |
 
 ---
 

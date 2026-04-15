@@ -5,7 +5,7 @@ import argparse
 import numpy as np
 import torch
 import torch.nn as nn
-from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from torch.optim.lr_scheduler import LinearLR, CosineAnnealingLR, SequentialLR
 import editdistance
 from tqdm import tqdm
@@ -18,7 +18,6 @@ from engine.codec import Encoder
 from engine.loss import FocalCTCLoss
 from engine.dataset import build_loaders
 from engine.augment import get_train_transforms, get_val_transforms, cutmix_batch
-
 
 def get_args():
     p = argparse.ArgumentParser()
@@ -59,7 +58,7 @@ def evaluate(model, loader, criterion, encoder, device, beam_width, lexicon_re, 
         targets = targets.to(device, non_blocking=True)
         lengths = lengths.to(device, non_blocking=True)
 
-        with autocast(enabled=device.type == "cuda"):
+        with autocast(device_type=device.type, enabled=device.type == "cuda"):
             log_probs = model(imgs)
 
         preds_ctc = log_probs.permute(1, 0, 2)
@@ -123,7 +122,7 @@ def train_one_epoch(model, loader, optimizer, criterion, scaler,
 
         optimizer.zero_grad(set_to_none=True)
 
-        with autocast(enabled=device.type == "cuda"):
+        with autocast(device_type=device.type, enabled=device.type == "cuda"):
             if use_sgm and use_frm:
                 log_probs, sgm_out = model(imgs, return_sgm=True)
 
@@ -261,7 +260,7 @@ def main():
         milestones=[cfg["warmup_epochs"]]
     )
 
-    scaler = GradScaler() if device.type == "cuda" else None
+    scaler = GradScaler(device="cuda") if device.type == "cuda" else None
 
     start_epoch = 1
     best_acc = 0.0
