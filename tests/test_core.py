@@ -45,10 +45,10 @@ def test_encoder_blank():
 
 def test_decode_greedy_with_blanks():
     enc = Encoder(CHARS)
-    # CTC raw sequence: 1, 1, 0, 2 → "12" (blank=0 collapses repeats)
+    # CTC raw sequence: 1, 1, 0, 2 → "01" (blank=0 collapses repeats; index 1='0', index 2='1')
     seq = [1, 1, 0, 2]
     result = enc.decode_greedy(seq)
-    assert result == "12"
+    assert result == "01"
 
 
 def test_decode_beam_pure_python():
