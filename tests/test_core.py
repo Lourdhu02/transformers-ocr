@@ -8,7 +8,9 @@ import sys
 import numpy as np
 import pytest
 import torch
+import pytest
 
+pytest.importorskip("cv2")
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
