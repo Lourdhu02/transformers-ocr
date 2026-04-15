@@ -38,7 +38,7 @@ python tools/prepare_dataset.py --src data/raw --out data --label-from-name pref
 # Custom split ratios
 python tools/prepare_dataset.py --src data/raw --out data --train 0.8 --val 0.1 --test 0.1
 
-# Dry run – print stats without copying anything
+# Dry run  print stats without copying anything
 python tools/prepare_dataset.py --src data/raw --out data --dry-run
 
 # Validate that every label matches the lexicon defined in config.py
@@ -47,10 +47,10 @@ python tools/prepare_dataset.py --src data/raw --out data --validate-lexicon
 
 import argparse
 import os
+import random
 import re
 import shutil
 import sys
-import random
 from collections import Counter
 from pathlib import Path
 
@@ -269,7 +269,7 @@ def main() -> None:
     if not images:
         sys.exit(f"[ERROR] No image files found in {src}")
 
-    print(f"\n  transformers-ocr  |  prepare_dataset")
+    print("\n  transformers-ocr  |  prepare_dataset")
     print(f"  source : {src}")
     print(f"  output : {out}")
     print(f"  images found : {len(images)}\n")
@@ -402,6 +402,8 @@ def main() -> None:
     print(f'    "val_labels":   "{rel}/val_labels.txt",')
     print(f'    "test_labels":  "{rel}/test_labels.txt",')
     print("  ─────────────────────────────────────────────────────────────\n")
+
+
 
 
 if __name__ == "__main__":
