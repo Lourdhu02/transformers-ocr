@@ -1,13 +1,14 @@
 
+import argparse
 import os
 import sys
-import argparse
+
 import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from models.svtr import build_model
 from configs.config import CONFIGS
+from models.svtr import build_model
 
 
 def get_args():
@@ -60,7 +61,7 @@ def main():
 
     try:
         import onnx
-        from onnxruntime.quantization import quantize_dynamic, QuantType
+        from onnxruntime.quantization import QuantType, quantize_dynamic
         onnx.checker.check_model(onnx_path)
         print("onnx check  OK")
 

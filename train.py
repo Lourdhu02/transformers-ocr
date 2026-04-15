@@ -1,23 +1,24 @@
+import argparse
 import os
 import sys
 import time
-import argparse
+
+import editdistance
 import numpy as np
 import torch
-import torch.nn as nn
 from torch.amp import GradScaler, autocast
-from torch.optim.lr_scheduler import LinearLR, CosineAnnealingLR, SequentialLR
-import editdistance
+from torch.optim.lr_scheduler import CosineAnnealingLR, LinearLR, SequentialLR
 from tqdm import tqdm
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from configs.config import CONFIGS
-from models.svtr import build_model
+from engine.augment import cutmix_batch, get_train_transforms, get_val_transforms
 from engine.codec import Encoder
-from engine.loss import FocalCTCLoss
 from engine.dataset import build_loaders
-from engine.augment import get_train_transforms, get_val_transforms, cutmix_batch
+from engine.loss import FocalCTCLoss
+from models.svtr import build_model
+
 
 def get_args():
     p = argparse.ArgumentParser()

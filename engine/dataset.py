@@ -1,9 +1,11 @@
 import os
+
 import cv2
 import torch
-from torch.utils.data import Dataset, DataLoader
-from engine.preprocess import preprocess
+from torch.utils.data import DataLoader, Dataset
+
 from engine.codec import Encoder
+from engine.preprocess import preprocess
 
 
 class MeterDataset(Dataset):

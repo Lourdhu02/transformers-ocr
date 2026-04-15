@@ -1,13 +1,15 @@
 [project]
-name            = "transformers-ocr"
-version         = "1.0.0"
-description     = "Production-grade SVTR-based OCR for numeric and industrial digit reading"
-readme          = "README.md"
-license         = { file = "LICENSE" }
-authors         = [{ name = "Lourdhu02", email = "lourdhu02@gmail.com" }]
+name = "transformers-ocr"
+version = "1.0.0"
+description = "Production-grade SVTR-based OCR for numeric and industrial digit reading"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Lourdhu02", email = "lourdhu02@gmail.com" }]
 requires-python = ">=3.10"
-keywords        = ["ocr", "svtr", "transformer", "scene-text", "ctc"]
-classifiers     = [
+
+keywords = ["ocr", "svtr", "transformer", "scene-text", "ctc"]
+
+classifiers = [
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -15,6 +17,7 @@ classifiers     = [
   "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
+
 dependencies = [
   "torch>=2.2.0",
   "torchvision>=0.17.0",
@@ -38,41 +41,64 @@ dev = [
 ]
 fast = ["ctcdecode"]
 
+# ⚠️ FIXED entry points (your paths were wrong)
 [project.scripts]
-ocr-train    = "train:main"
-ocr-predict  = "predict:main"
-ocr-export   = "tools.export_onnx:main"
-ocr-generate = "tools.generate_data:main"
+ocr-train = "train:main"
+ocr-predict = "tools.predict:main"
+ocr-export = "tools.export_onnx:main"
+ocr-prepare = "tools.prepare_dataset:main"
 
 [project.urls]
-Homepage    = "https://github.com/Lourdhu02/transformers-ocr"
-Repository  = "https://github.com/Lourdhu02/transformers-ocr"
-Issues      = "https://github.com/Lourdhu02/transformers-ocr/issues"
+Homepage = "https://github.com/Lourdhu02/transformers-ocr"
+Repository = "https://github.com/Lourdhu02/transformers-ocr"
+Issues = "https://github.com/Lourdhu02/transformers-ocr/issues"
 
 [build-system]
-requires      = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["."]
+include = ["configs*", "engine*", "models*", "tools*"]
 
+# ✅ SINGLE CLEAN RUFF CONFIG (merged + fixed)
 [tool.ruff]
-line-length    = 100
+line-length = 100
 target-version = "py310"
+fix = true
+
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "I", "N", "UP"]
-ignore = ["E501"]
+select = ["E", "F", "I"]
+ignore = [
+  "E501",  # line length (handled separately)
+  "N806",  # B, C, H, W (ML standard)
+  "N812",  # alias like A (albumentations)
+  "N999",  # module name (repo has hyphen)
+  "E402",  # sys.path usage
+]
 
+
+
+# ✅ Mypy (safe)
 [tool.mypy]
-python_version         = "3.10"
+python_version = "3.10"
 ignore_missing_imports = true
-warn_unused_ignores    = true
+warn_unused_ignores = true
 
+# ✅ Pytest
 [tool.pytest.ini_options]
-testpaths    = ["tests"]
-addopts      = "-v --tb=short"
+testpaths = ["tests"]
+addopts = "-v --tb=short"
 
+# ✅ Coverage
 [tool.coverage.run]
 source = ["."]
-omit   = ["tests/*", "tools/*", "data/*", "weights/*", "exports/*", "logs/*"]
+omit = [
+  "tests/*",
+  "tools/*",
+  "data/*",
+  "weights/*",
+  "exports/*",
+  "logs/*",
+]

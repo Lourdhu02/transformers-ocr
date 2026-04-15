@@ -2,11 +2,12 @@
 Unit tests for transformers-ocr core components.
 Run with: pytest tests/ -v
 """
-import sys
 import os
+import sys
+
 import numpy as np
-import torch
 import pytest
+import torch
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 

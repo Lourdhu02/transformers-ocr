@@ -1,19 +1,20 @@
+import argparse
 import os
 import sys
-import argparse
+
 import cv2
 import torch
-import numpy as np
+
 # FIX: use non-deprecated torch.amp API
 from torch.amp import autocast
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from models.svtr import build_model
+from configs.config import CONFIGS
+from engine.augment import get_val_transforms
 from engine.codec import Encoder
 from engine.preprocess import preprocess
-from engine.augment import get_val_transforms
-from configs.config import CONFIGS
+from models.svtr import build_model
 
 
 def get_args():
@@ -69,8 +70,9 @@ def predict_single(model, encoder, img_bgr, cfg, device, tf, use_tta=False):
         )
         return pred, conf
 
-    import albumentations as A
     from collections import Counter
+
+    import albumentations as A
     votes = []
     bcs   = [(-0.3, -0.3), (-0.15, 0.0), (0.0, 0.0), (0.15, 0.15), (0.3, 0.3)]
     for b, c in bcs:
