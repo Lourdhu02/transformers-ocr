@@ -58,7 +58,6 @@ CONFIGS = {
 }
 
 # Validate regexes at import time — crash loudly rather than silently at eval
-# Validate regexes at import time — crash loudly rather than silently at eval
 for _k, _v in CONFIGS.items():
     try:
         re.compile(_v["lexicon_re"])

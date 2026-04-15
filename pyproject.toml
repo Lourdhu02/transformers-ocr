@@ -28,6 +28,7 @@ dependencies = [
   "onnx>=1.16.0",
   "onnxruntime>=1.18.0",
   "tqdm>=4.66.0",
+  "timm>=0.9.16",
   "Pillow>=10.0.0",
 ]
 
